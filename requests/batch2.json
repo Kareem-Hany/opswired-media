@@ -1,0 +1,95 @@
+{
+  "name": "batch2",
+  "assets": [
+    {
+      "name": "chef_tablet",
+      "ratio": "4:5",
+      "style": "person",
+      "prompt": "A friendly restaurant manager in a navy apron over a violet shirt, three-quarter body, holding a tablet in one hand and giving a small welcoming wave, warm smile."
+    },
+    {
+      "name": "agent_keys",
+      "ratio": "4:5",
+      "style": "person",
+      "prompt": "A confident real-estate agent in a navy blazer, three-quarter body, holding a set of house keys in one hand and a tablet in the other, friendly smile."
+    },
+    {
+      "name": "teacher_tablet",
+      "ratio": "4:5",
+      "style": "person",
+      "prompt": "A friendly young teacher in a violet cardigan, waist-up, holding a tablet and a notebook against her chest, encouraging smile."
+    },
+    {
+      "name": "shop_owner_boxes",
+      "ratio": "4:5",
+      "style": "person",
+      "prompt": "A cheerful online shop owner in a violet apron over a white shirt, three-quarter body, holding a stack of two small parcel boxes and a smartphone."
+    },
+    {
+      "name": "recruiter_tablet",
+      "ratio": "4:5",
+      "style": "person",
+      "prompt": "A professional recruiter in a navy suit, waist-up, holding a tablet and smiling at the camera, open confident posture."
+    },
+    {
+      "name": "two_standing",
+      "ratio": "4:5",
+      "style": "person",
+      "prompt": "A man and a woman in smart navy and violet business casual, three-quarter body, standing side by side and looking at a tablet the woman holds, talking and smiling."
+    },
+    {
+      "name": "founder_walking",
+      "ratio": "4:5",
+      "style": "person",
+      "prompt": "A young Middle Eastern entrepreneur in a violet sweater and dark trousers, full body, walking forward while looking at his smartphone, relaxed smile."
+    },
+    {
+      "name": "obj_house_key",
+      "ratio": "1:1",
+      "style": "object",
+      "prompt": "A glossy 3D miniature house with a round violet key floating beside it and a small white check badge on the door."
+    },
+    {
+      "name": "obj_food_order",
+      "ratio": "1:1",
+      "style": "object",
+      "prompt": "A glossy 3D takeaway paper bag with a white check badge on the front, a small order receipt card with abstract lines and a tiny clock floating beside it. No readable text."
+    },
+    {
+      "name": "obj_graduation",
+      "ratio": "1:1",
+      "style": "object",
+      "prompt": "A glossy 3D graduation cap resting on a stack of two violet books with a small white check badge. No readable text."
+    },
+    {
+      "name": "obj_shop_bag",
+      "ratio": "1:1",
+      "style": "object",
+      "prompt": "A glossy 3D shopping bag with a small cart floating in front of it and a white check badge. Generic shapes, no brand marks."
+    },
+    {
+      "name": "obj_profile_cards",
+      "ratio": "1:1",
+      "style": "object",
+      "prompt": "A fan of three glossy 3D profile cards with abstract avatar circles and lines, the front card with a white check badge. No readable text."
+    },
+    {
+      "name": "obj_shield_lock",
+      "ratio": "1:1",
+      "style": "object",
+      "prompt": "A glossy 3D shield with a white padlock and check mark in the center, violet and lavender materials."
+    },
+    {
+      "name": "obj_medical_clipboard",
+      "ratio": "1:1",
+      "style": "object",
+      "prompt": "A glossy 3D clipboard with a violet cross badge and a small heartbeat line card floating beside it. No readable text."
+    },
+    {
+      "name": "bg_light_lilac",
+      "ratio": "4:5",
+      "style": "scene_light",
+      "prompt": "A tall airy background."
+    }
+  ]
+}
