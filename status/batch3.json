@@ -1,10 +1,21 @@
 {
- "time": "2026-10-25 16:35:26Z",
- "state": "running",
- "done": 2,
+ "time": "2026-10-25 19:51:52Z",
+ "state": "finished",
+ "done": 12,
  "total": 12,
+ "problems": 9,
  "log": [
-  "NO IMAGE for courier_parcel.png: Gemini answered with text only -> I can search for images, but can't create any for you at the moment. You might be signed out or image creation may not be available in your location yet.",
-  "NO IMAGE for clinic_reception.png: Gemini answered with text only -> Are you signed in? I can search for images, but can't seem to create any for you right now. It's also possible that image creation isn't available in your locat"
+  "saved: courier_parcel.png (pollinations fallback)",
+  "FAILED clinic_reception.png: pollinations HTTP 402",
+  "FAILED ops_manager.png: pollinations HTTP 402",
+  "FAILED founder_pointing.png: pollinations HTTP 402",
+  "saved: trainer_standing.png (pollinations fallback)",
+  "FAILED obj_parcel_truck.png: pollinations HTTP 402",
+  "FAILED obj_dashboard.png: pollinations HTTP 402",
+  "FAILED obj_calendar.png: pollinations HTTP 402",
+  "saved: obj_chat.png (pollinations fallback)",
+  "FAILED obj_laptop_flow.png: pollinations HTTP 402",
+  "FAILED obj_invoice.png: pollinations HTTP 402",
+  "FAILED obj_gears_clock.png: pollinations HTTP 402"
  ]
 }

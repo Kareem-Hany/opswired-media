@@ -1,0 +1,28 @@
+OpsWired autopilot running. Leave this window open. Ctrl+C to stop.
+[bridge] API layer unavailable (gemini-nano-banana-2.1: HTTP 429) -> next layer
+[32m2026-10-25 22:49:07.811[0m | [33m[1mWARNING [0m | [36mgemini_webapi.client[0m:[36m_fetch_user_status[0m:[36m559[0m - [33m[1mAccount status: UNAUTHENTICATED - Session is not authenticated or cookies have expired. Please check your cookies.[0m
+[32m2026-10-25 22:49:08.296[0m | [33m[1mWARNING [0m | [36mgemini_webapi.client[0m:[36m_parse_rpc_results[0m:[36m504[0m - [33m[1mRPC request GPRiHf failed: Permission denied or unauthenticated.[0m
+[32m2026-10-25 22:49:08.296[0m | [32m[1mSUCCESS [0m | [36mgemini_webapi.client[0m:[36minit[0m:[36m346[0m - [32m[1mGemini client initialized successfully.[0m
+[batch3 1/12] saved: courier_parcel.png (pollinations fallback)
+[bridge] API layer unavailable (gemini-nano-banana-2.1: HTTP 429) -> next layer
+[batch3 2/12] FAILED clinic_reception.png: pollinations HTTP 402
+[bridge] API layer unavailable (gemini-nano-banana-2.1: HTTP 429) -> next layer
+[batch3 3/12] FAILED ops_manager.png: pollinations HTTP 402
+[bridge] API layer unavailable (gemini-nano-banana-2.1: HTTP 429) -> next layer
+[batch3 4/12] FAILED founder_pointing.png: pollinations HTTP 402
+[bridge] API layer unavailable (gemini-nano-banana-2.1: HTTP 429) -> next layer
+[batch3 5/12] saved: trainer_standing.png (pollinations fallback)
+[bridge] API layer unavailable (gemini-nano-banana-2.1: HTTP 429) -> next layer
+[batch3 6/12] FAILED obj_parcel_truck.png: pollinations HTTP 402
+[bridge] API layer unavailable (gemini-nano-banana-2.1: HTTP 429) -> next layer
+[batch3 7/12] FAILED obj_dashboard.png: pollinations HTTP 402
+[bridge] API layer unavailable (gemini-nano-banana-2.1: HTTP 429) -> next layer
+[batch3 8/12] FAILED obj_calendar.png: pollinations HTTP 402
+[bridge] API layer unavailable (gemini-nano-banana-2.1: HTTP 429) -> next layer
+[batch3 9/12] saved: obj_chat.png (pollinations fallback)
+[bridge] API layer unavailable (gemini-nano-banana-2.1: HTTP 429) -> next layer
+[batch3 10/12] FAILED obj_laptop_flow.png: pollinations HTTP 402
+[bridge] API layer unavailable (gemini-nano-banana-2.1: HTTP 429) -> next layer
+[batch3 11/12] FAILED obj_invoice.png: pollinations HTTP 402
+[bridge] API layer unavailable (gemini-nano-banana-2.1: HTTP 429) -> next layer
+[batch3 12/12] FAILED obj_gears_clock.png: pollinations HTTP 402

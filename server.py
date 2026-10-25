@@ -122,6 +122,9 @@ async def pollinations_image(prompt: str, dest: pathlib.Path) -> str:
     async with httpx.AsyncClient(timeout=180.0, follow_redirects=True) as hc:
         r = await hc.get(url)
     if r.status_code == 200 and r.content[:2] in (b"\xff\xd8", b"\x89P"):
+        # QUARANTINE: fallback images must never mix with brand assets. Save under
+        # _fallback/ so design pipelines can exclude them by path.
+        dest = dest.parent / "_fallback" / dest.name
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(r.content)
         try:
@@ -131,7 +134,7 @@ async def pollinations_image(prompt: str, dest: pathlib.Path) -> str:
                 im.convert("RGBA").save(dest, "PNG")
         except Exception:
             pass
-        return f"saved: {dest.name} (pollinations fallback)"
+        return f"saved (FALLBACK, quarantined): _fallback/{dest.name}"
     return f"FAILED {dest.name}: pollinations HTTP {r.status_code}"
 
 

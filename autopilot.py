@@ -41,9 +41,17 @@ def push(msg):
         git("pull", "--rebase", "--autostash", "-q")
         r = git("push", "-q", "origin", "HEAD")
         if r.returncode == 0:
-            return True
+            # Verify the remote actually has this commit (a silently failed push once
+            # made a finished batch invisible for hours).
+            v = git("ls-remote", "origin", "HEAD")
+            local = git("rev-parse", "HEAD").stdout.strip()
+            if local and local[:12] in v.stdout:
+                write_status("push", ok=True, sha=local[:12], msg=msg)
+                return True
+            continue
         time.sleep(3)
     print("!! git push failed:", (r.stderr if r else "")[:300], flush=True)
+    write_status("push", ok=False, msg=msg, err=(r.stderr if r else "")[:200])
     return False
 
 
