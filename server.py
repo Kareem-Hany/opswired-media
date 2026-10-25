@@ -1,29 +1,45 @@
 #!/usr/bin/env python3
 """
-OpsWired x Gemini bridge  (runs on YOUR PC, uses your logged-in Gemini web session - no API billing)
+OpsWired x Gemini bridge  (runs on YOUR PC)
+
+AUTH - TWO MODES, PICK BY WHAT IS SET (API key wins; it never expires like cookies):
+  A) GEMINI_API_KEY = a free Google AI Studio API key (RECOMMENDED - official endpoint,
+     no cookies, no expiry, same key style the JOB BRO engine already uses).
+     Get one: aistudio.google.com -> Get API key. Put it in cookies.env:
+         GEMINI_API_KEY=AIza...
+  B) GEMINI_PSID / GEMINI_PSIDTS  (legacy web-session cookies - expire every few weeks)
 
 THREE WAYS TO USE THIS ONE FILE
-  1. python server.py --test                   -> makes ONE image to prove cookies + library work
+  1. python server.py --test                   -> makes ONE image to prove the bridge works
   2. python server.py --batch                  -> reads prompts.json (same folder), makes every asset, writes opswired_assets.zip
      python server.py --batch --only team_laptop obj_funnel
   3. (no flag)                                 -> MCP server for Claude Desktop (see claude_desktop_config.json)
 
-COOKIES  (never paste them in a chat, never put this folder in Drive/GitHub)
-  Set two environment variables, or put them in the Claude Desktop config "env" block:
-     GEMINI_PSID    = value of cookie  __Secure-1PSID   (gemini.google.com -> F12 -> Application -> Cookies)
-     GEMINI_PSIDTS  = value of cookie  __Secure-1PSIDTS
-  They are the keys to your Google session; they expire every few weeks - just copy fresh ones then.
-
 SETUP
-  pip install gemini-webapi pillow "mcp<2"        (the quotes matter: mcp 2.x breaks the old import)
+  pip install httpx pillow "mcp<2"        (the quotes matter: mcp 2.x breaks the old import)
+  pip install gemini-webapi                (only needed if you use legacy cookie mode B)
 """
-import asyncio, json, os, pathlib, sys, time, zipfile
+import asyncio, base64, json, os, pathlib, sys, time, zipfile
 
 HERE = pathlib.Path(__file__).parent
+
+# Self-load cookies.env (works standalone: --test, --batch, MCP; autopilot.py also loads it)
+_env_file = HERE / "cookies.env"
+if _env_file.exists():
+    for _line in _env_file.read_text(encoding="utf-8").splitlines():
+        if "=" in _line and not _line.strip().startswith("#"):
+            _k, _v = _line.split("=", 1)
+            os.environ.setdefault(_k.strip(), _v.strip().strip('"').strip("'"))
+
 OUT = pathlib.Path(os.environ.get("OPSWIRED_OUT") or HERE / "assets")
+API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
 PSID = os.environ.get("GEMINI_PSID", "").strip()
 PSIDTS = os.environ.get("GEMINI_PSIDTS", "").strip()
 GAP_SECONDS = float(os.environ.get("OPSWIRED_GAP", "6"))   # pause between images, avoids rate limits
+
+API_BASE = "https://generativelanguage.googleapis.com/v1beta"
+# Ring verified live against a free AI Studio key (models list, 2026-10-25) — cheapest/limit-friendly first.
+API_IMAGE_MODELS = ["gemini-3.1-flash-lite-image", "gemini-3.1-flash-image", "gemini-2.5-flash-image", "gemini-3.1-flash-image-preview", "gemini-nano-banana-2.1"]
 
 _client = None
 _jobs = {}  # background batch state
@@ -34,12 +50,89 @@ async def client():
     global _client
     if _client is None:
         if not PSID:
-            raise RuntimeError("GEMINI_PSID is not set (see the top of server.py).")
+            raise RuntimeError("No GEMINI_API_KEY and no GEMINI_PSID set (see the top of server.py).")
         from gemini_webapi import GeminiClient
         c = GeminiClient(PSID, PSIDTS or None)
         await c.init(timeout=120, auto_close=False, auto_refresh=True)
         _client = c
     return _client
+
+
+async def api_make_image(prompt: str, dest: pathlib.Path) -> str:
+    """Official Gemini API image generation with an API key. Tries a small model ring
+    so a retired/limited model falls through instead of breaking the batch."""
+    import httpx
+
+    body = {"contents": [{"parts": [{"text": prompt}]}]}
+    last = "no model attempted"
+    for model in API_IMAGE_MODELS:
+        try:
+            async with httpx.AsyncClient(timeout=120.0) as hc:
+                resp = await hc.post(
+                    f"{API_BASE}/models/{model}:generateContent",
+                    headers={"x-goog-api-key": API_KEY, "Content-Type": "application/json"},
+                    json=body,
+                )
+        except Exception as e:
+            last = f"{model}: network {type(e).__name__}"
+            continue
+        if resp.status_code != 200:
+            last = f"{model}: HTTP {resp.status_code}"
+            if resp.status_code == 400 and "API_KEY" in resp.text[:400]:
+                return f"FAILED {dest.name}: API key rejected - check GEMINI_API_KEY"
+            continue  # 404 retired / 429 quota / 5xx -> next model
+        parts = resp.json().get("candidates", [{}])[0].get("content", {}).get("parts", [])
+        img = next((p.get("inlineData") or p.get("inline_data") for p in parts if (p.get("inlineData") or p.get("inline_data"))), None)
+        if not img:
+            txt = " ".join(p.get("text", "") for p in parts if p.get("text"))[:140]
+            last = f"{model}: text-only answer -> {txt}"
+            continue
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_bytes(base64.b64decode(img["data"]))
+        try:  # normalize whatever Google sent into a real PNG
+            from PIL import Image
+            im = Image.open(dest)
+            if im.format != "PNG":
+                im.convert("RGBA").save(dest, "PNG")
+        except Exception:
+            pass
+        return f"saved: {dest.name} (API, {model})"
+    return f"FAILED {dest.name}: {last}"
+
+
+async def pollinations_image(prompt: str, dest: pathlib.Path) -> str:
+    """Zero-auth fallback: pollinations.ai (free, no key, no cookies, unlimited).
+    Used only when both the Gemini API quota and the web cookies are unavailable,
+    so image-making never stalls while you sleep."""
+    import urllib.parse
+
+    import httpx
+
+    dims = (1024, 1024)
+    p = prompt.lower()
+    if "4:5" in p:
+        dims = (896, 1120)
+    elif "3:2" in p:
+        dims = (1216, 832)
+    elif "16:9" in p:
+        dims = (1344, 768)
+    elif "9:16" in p:
+        dims = (768, 1344)
+    url = "https://image.pollinations.ai/prompt/" + urllib.parse.quote(prompt[:1500]) + f"?width={dims[0]}&height={dims[1]}&nologo=true"
+    async with httpx.AsyncClient(timeout=180.0, follow_redirects=True) as hc:
+        r = await hc.get(url)
+    if r.status_code == 200 and r.content[:2] in (b"\xff\xd8", b"\x89P"):
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_bytes(r.content)
+        try:
+            from PIL import Image
+            im = Image.open(dest)
+            if im.format != "PNG":
+                im.convert("RGBA").save(dest, "PNG")
+        except Exception:
+            pass
+        return f"saved: {dest.name} (pollinations fallback)"
+    return f"FAILED {dest.name}: pollinations HTTP {r.status_code}"
 
 
 def build_prompt(item, styles):
@@ -49,30 +142,39 @@ def build_prompt(item, styles):
 
 
 async def make_image(prompt, dest: pathlib.Path):
-    """One image -> dest (PNG). Returns a status string. Never retries silently."""
+    """One image -> dest (PNG). Three layers so it NEVER stalls:
+    1) official Gemini API (best; quota resets daily)
+    2) legacy web cookies (if still fresh)
+    3) pollinations.ai (free, no auth, unlimited)"""
     if dest.exists():
         return f"skip (exists): {dest.name}"
     dest.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        c = await client()
-        resp = await c.generate_content(prompt)
-        imgs = list(resp.images or [])
-        if not imgs:
-            return f"NO IMAGE for {dest.name}: Gemini answered with text only -> " + (resp.text or "")[:160].replace("\n", " ")
-        saved = await imgs[0].save(path=str(dest.parent), filename=dest.name)
-        saved = pathlib.Path(saved)
-        if saved != dest:
-            saved.replace(dest)
-        try:  # make sure it is a real PNG whatever Google sent
-            from PIL import Image
-            im = Image.open(dest)
-            if im.format != "PNG":
-                im.convert("RGBA").save(dest, "PNG")
-        except Exception:
-            pass
-        return f"saved: {dest.name}"
-    except Exception as e:
-        return f"FAILED {dest.name}: {str(e)[:220]}"
+    if API_KEY:
+        r = await api_make_image(prompt, dest)
+        if r.startswith("saved"):
+            return r
+        print(f"[bridge] API layer unavailable ({r.split(':', 1)[-1].strip()[:90]}) -> next layer", flush=True)
+    if PSID:
+        try:
+            c = await client()
+            resp = await c.generate_content(prompt)
+            imgs = list(resp.images or [])
+            if imgs:
+                saved = await imgs[0].save(path=str(dest.parent), filename=dest.name)
+                saved = pathlib.Path(saved)
+                if saved != dest:
+                    saved.replace(dest)
+                try:
+                    from PIL import Image
+                    im = Image.open(dest)
+                    if im.format != "PNG":
+                        im.convert("RGBA").save(dest, "PNG")
+                except Exception:
+                    pass
+                return f"saved: {dest.name} (web cookies)"
+        except Exception as e:
+            print(f"[bridge] cookie layer unavailable ({str(e)[:90]}) -> final layer", flush=True)
+    return await pollinations_image(prompt, dest)
 
 
 def load_spec(path=None):
@@ -135,10 +237,12 @@ def mcp_main():
 
     @mcp.tool()
     async def bridge_status() -> str:
-        """Check the Gemini image bridge: shows output folder and whether the Gemini session works."""
+        """Check the Gemini image bridge: shows output folder and whether auth works."""
+        if API_KEY:
+            return f"OK. API-key mode (no cookies, never expires). Output folder: {OUT}"
         try:
             await client()
-            return f"OK. Gemini session is live. Output folder: {OUT}"
+            return f"OK. Legacy web-session cookies live (consider adding GEMINI_API_KEY). Output folder: {OUT}"
         except Exception as e:
             return f"NOT READY: {e}"
 
