@@ -26,3 +26,4 @@ OpsWired autopilot running. Leave this window open. Ctrl+C to stop.
 [batch3 11/12] FAILED obj_invoice.png: pollinations HTTP 402
 [bridge] API layer unavailable (gemini-nano-banana-2.1: HTTP 429) -> next layer
 [batch3 12/12] FAILED obj_gears_clock.png: pollinations HTTP 402
+Press any key to continue . . . 
