@@ -1,0 +1,77 @@
+{
+  "name": "batch3",
+  "assets": [
+    {
+      "name": "courier_parcel",
+      "ratio": "4:5",
+      "style": "person",
+      "prompt": "A friendly delivery courier of Middle Eastern appearance in a violet jacket and navy trousers, full body, walking forward carrying one parcel box under one arm and holding a smartphone in the other hand, relaxed confident smile. Any phone, tablet or laptop is plain and unbranded: no logos, no symbols, no text on any device or clothing."
+    },
+    {
+      "name": "clinic_reception",
+      "ratio": "4:5",
+      "style": "person",
+      "prompt": "A warm clinic receptionist in a navy smart uniform with a violet scarf, waist-up, holding a clipboard against her chest and smiling at the camera. Any phone, tablet or laptop is plain and unbranded: no logos, no symbols, no text on any device or clothing."
+    },
+    {
+      "name": "ops_manager",
+      "ratio": "4:5",
+      "style": "person",
+      "prompt": "A confident operations manager, Arab man in his thirties, navy shirt with sleeves rolled, three-quarter body, holding a closed plain laptop under one arm and pointing forward with the other hand, friendly expression. Any phone, tablet or laptop is plain and unbranded: no logos, no symbols, no text on any device or clothing."
+    },
+    {
+      "name": "founder_pointing",
+      "ratio": "4:5",
+      "style": "person",
+      "prompt": "A young female entrepreneur in a violet blazer over a white top, three-quarter body, one hand holding a smartphone and the other pointing up and to the side as if presenting an idea, bright smile. Any phone, tablet or laptop is plain and unbranded: no logos, no symbols, no text on any device or clothing."
+    },
+    {
+      "name": "trainer_standing",
+      "ratio": "4:5",
+      "style": "person",
+      "prompt": "A friendly corporate trainer, man with a short beard, in a navy jacket and violet shirt, three-quarter body, arms open in a welcoming gesture, holding nothing. Any phone, tablet or laptop is plain and unbranded: no logos, no symbols, no text on any device or clothing."
+    },
+    {
+      "name": "obj_parcel_truck",
+      "ratio": "1:1",
+      "style": "object",
+      "prompt": "A glossy 3D delivery van in violet and lavender with a small white check badge on the side and a stack of two parcel boxes in front of it. No readable text."
+    },
+    {
+      "name": "obj_dashboard",
+      "ratio": "1:1",
+      "style": "object",
+      "prompt": "A glossy 3D floating glass dashboard panel with abstract bar-chart columns and a rising line, a small violet cloud icon above it and a white check badge. No readable text or numbers."
+    },
+    {
+      "name": "obj_calendar",
+      "ratio": "1:1",
+      "style": "object",
+      "prompt": "A glossy 3D calendar block with a violet header, a grid of abstract rounded date squares and one highlighted square with a white check mark, a small clock floating beside it. No readable text or numbers."
+    },
+    {
+      "name": "obj_chat",
+      "ratio": "1:1",
+      "style": "object",
+      "prompt": "Two overlapping glossy 3D speech bubbles, one violet and one frosted lavender glass, with a small white check badge between them and tiny floating glass cubes. No readable text."
+    },
+    {
+      "name": "obj_laptop_flow",
+      "ratio": "1:1",
+      "style": "object",
+      "prompt": "A glossy 3D open laptop in violet and lavender with a floating glass workflow diagram of three connected rounded nodes above the screen. No readable text, no logos."
+    },
+    {
+      "name": "obj_invoice",
+      "ratio": "1:1",
+      "style": "object",
+      "prompt": "A glossy 3D invoice sheet with abstract grey lines and a violet seal stamp with a white check, a small paper clip, frosted glass edge. No readable text or numbers."
+    },
+    {
+      "name": "obj_gears_clock",
+      "ratio": "1:1",
+      "style": "object",
+      "prompt": "A glossy 3D clock with two interlocking violet gears behind it and a small white check badge. No readable text or numbers."
+    }
+  ]
+}
